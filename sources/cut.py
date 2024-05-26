@@ -1,11 +1,16 @@
 from pydub import AudioSegment 
   
-sound = AudioSegment.from_file("./sources/sounds/traffic-noise/raw/y2mate.com - Suara lalu lintas kota  suasana jalan raya di sore hari  walking around.mp3", format="mp3") 
-for index, milisecond in enumerate(range(0, len(sound), 5000), 1):
-    if milisecond + 5000 > len(sound):
+audioFile = "./sources/sounds/ambulance/raw/utomp3.com - GAWAT Apa Yang Terjadi Banyak Mobil Ambulance Melintas Sitinjau Lauik Hal Yang Ditakuti Terjadi.wav"
+outputFolder = "./sources/sounds/ambulance/test"
+interval = 5000
+startAt = 314
+
+sound = AudioSegment.from_file(audioFile, format="wav") 
+for index, milisecond in enumerate(range(0, len(sound), interval), startAt):
+    if (milisecond + interval) > len(sound):
         break
 
-    sound[milisecond:milisecond + 5000 - 1].export("./sources/sounds/traffic-noise/" + str(index) + ".wav", format="wav")
+    sound[milisecond:milisecond + interval - 1].export(f"{outputFolder}/{str(index)}.wav", format="wav")
 
 
   
