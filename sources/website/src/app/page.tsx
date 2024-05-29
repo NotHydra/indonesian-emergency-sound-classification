@@ -3,6 +3,7 @@
 import { ChangeEvent, useState } from "react";
 
 export default function Home(): JSX.Element {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<String>("No file chosen");
 
@@ -17,9 +18,21 @@ export default function Home(): JSX.Element {
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+        if (file == null) {
+            return;
+        }
+
         event.preventDefault();
 
-        console.log("File:", file);
+        setIsLoading(true);
+
+        setTimeout(() => {
+            console.log("File:", file);
+
+            alert("File uploaded successfully:\n" + file.name);
+
+            setIsLoading(false);
+        }, 1000);
     };
 
     return (
@@ -48,7 +61,7 @@ export default function Home(): JSX.Element {
                                 </label>
                             </div>
 
-                            <button className="button is-light" type="submit" disabled={file == null}>
+                            <button className={`button is-light ${isLoading ? "is-loading" : ""}`} type="submit" disabled={file == null}>
                                 <span className="icon">
                                     <i className="fa-solid fa-paper-plane"></i>
                                 </span>
