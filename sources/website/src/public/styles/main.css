@@ -12,3 +12,7 @@
 .has-background-main {
     background-color: var(--main);
 }
+
+.footer-link {
+    color: #ffffff;
+}
