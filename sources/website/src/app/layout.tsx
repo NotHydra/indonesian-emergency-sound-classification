@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { NextFont } from "next/dist/compiled/@next/font";
 
 import "bulma/css/bulma.css";
+import "@fortawesome/fontawesome-free/css/all.css";
 import "./../public/styles/main.css";
 
 const inter: NextFont = Inter({ subsets: ["latin"] });
