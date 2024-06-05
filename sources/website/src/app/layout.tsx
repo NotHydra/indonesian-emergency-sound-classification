@@ -4,7 +4,7 @@ import { NextFont } from "next/dist/compiled/@next/font";
 
 import "bulma/css/bulma.css";
 import "@fortawesome/fontawesome-free/css/all.css";
-import "./../public/styles/main.css";
+import "./../public/css/main.css";
 
 const inter: NextFont = Inter({ subsets: ["latin"] });
 
