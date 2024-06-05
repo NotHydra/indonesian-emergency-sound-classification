@@ -29,7 +29,11 @@ export default function Home(): JSX.Element {
         setTimeout(() => {
             console.log("File:", file);
 
-            alert("File uploaded successfully:\n" + file.name);
+            if (file.type === "audio/mp3") {
+                alert("File uploaded successfully:\n" + file.name);
+            } else {
+                alert("Please upload an MP3 file");
+            }
 
             setIsLoading(false);
         }, 1000);
