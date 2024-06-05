@@ -30,8 +30,8 @@ export default function Home(): JSX.Element {
             return;
         }
 
-        if (["audio/mp3", "audio/mpeg"].includes(file.type) === false) {
-            setFileResponse("Invalid file type. Please upload an MP3 or MPEG file");
+        if (["audio/wav"].includes(file.type) === false) {
+            setFileResponse("Invalid file type. Please upload a WAV file");
 
             return;
         }
@@ -55,7 +55,7 @@ export default function Home(): JSX.Element {
                         <form onSubmit={handleFileSubmit}>
                             <div className="file is-light has-name is-right is-fullwidth mb-4">
                                 <label className="file-label">
-                                    <input className="file-input" type="file" name="file" accept=".mp3" onChange={handleFileChange} />
+                                    <input className="file-input" type="file" name="file" accept=".wav" onChange={handleFileChange} />
 
                                     <span className="file-cta">
                                         <span className="file-icon">
