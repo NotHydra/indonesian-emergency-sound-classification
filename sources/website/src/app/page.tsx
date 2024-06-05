@@ -1,5 +1,6 @@
 "use client";
 
+import axios, { AxiosResponse } from "axios";
 import { ChangeEvent, useState } from "react";
 
 export default function Home(): JSX.Element {
@@ -20,7 +21,7 @@ export default function Home(): JSX.Element {
         setFileName(event.target.files[0].name.length > 50 ? event.target.files[0].name.substring(0, 50) + "..." : event.target.files[0].name);
     };
 
-    const handleFileSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    const handleFileSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
         event.preventDefault();
         setIsLoading(true);
 
@@ -36,7 +37,16 @@ export default function Home(): JSX.Element {
             return;
         }
 
-        setFileResponse("File uploaded successfully");
+        const formData: FormData = new FormData();
+        formData.append("file", file);
+
+        const response: AxiosResponse<String> = await axios.post("http://localhost:3001/api/classify", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        setFileResponse(`File uploaded successfully: ${response.data}`);
     };
 
     const handleModalClose = (): void => {
