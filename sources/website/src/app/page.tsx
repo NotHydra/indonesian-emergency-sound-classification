@@ -6,37 +6,41 @@ export default function Home(): JSX.Element {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<String>("No file chosen");
+    const [fileResponse, setFileResponse] = useState<String>("No response");
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        if (event.target.files != null && event.target.files[0] != null) {
-            setFile(event.target.files[0]);
-            setFileName(event.target.files[0].name.length > 50 ? event.target.files[0].name.substring(0, 50) + "..." : event.target.files[0].name);
-        } else {
+        if (event.target.files === null || event.target.files[0] === null) {
             setFile(null);
             setFileName("No file chosen");
-        }
-    };
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-        if (file == null) {
             return;
         }
 
-        event.preventDefault();
+        setFile(event.target.files[0]);
+        setFileName(event.target.files[0].name.length > 50 ? event.target.files[0].name.substring(0, 50) + "..." : event.target.files[0].name);
+    };
 
+    const handleFileSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+        event.preventDefault();
         setIsLoading(true);
 
-        setTimeout(() => {
-            console.log("File:", file);
+        if (file === null) {
+            setFileResponse("Please choose a file");
 
-            if (file.type === "audio/mp3") {
-                alert("File uploaded successfully:\n" + file.name);
-            } else {
-                alert("Please upload an MP3 file");
-            }
+            return;
+        }
 
-            setIsLoading(false);
-        }, 1000);
+        if (["audio/mp3", "audio/mpeg"].includes(file.type) === false) {
+            setFileResponse("Invalid file type. Please upload an MP3 or MPEG file");
+
+            return;
+        }
+
+        setFileResponse("File uploaded successfully");
+    };
+
+    const handleModalClose = (): void => {
+        setIsLoading(false);
     };
 
     return (
@@ -48,7 +52,7 @@ export default function Home(): JSX.Element {
 
                         <p className="subtitle has-text-light mb-4">Upload an audio file below to check for emergency sounds</p>
 
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleFileSubmit}>
                             <div className="file is-light has-name is-right is-fullwidth mb-4">
                                 <label className="file-label">
                                     <input className="file-input" type="file" name="file" accept=".mp3" onChange={handleFileChange} />
@@ -65,7 +69,7 @@ export default function Home(): JSX.Element {
                                 </label>
                             </div>
 
-                            <button className={`button is-light ${isLoading ? "is-loading" : ""}`} type="submit" disabled={file == null}>
+                            <button className={`button is-light ${isLoading ? "is-loading" : ""}`} type="submit" disabled={file === null}>
                                 <span className="icon">
                                     <i className="fa-solid fa-paper-plane"></i>
                                 </span>
@@ -76,6 +80,26 @@ export default function Home(): JSX.Element {
                     </div>
                 </div>
             </section>
+
+            <div id="upload-modal" className={`modal ${isLoading ? "is-active" : ""}`}>
+                <div className="modal-background"></div>
+
+                <div className="modal-content">
+                    <article className="message is-dark">
+                        <div className="message-header">
+                            <p className="is-size-4">Response</p>
+
+                            <button className="delete" onClick={handleModalClose}></button>
+                        </div>
+
+                        <div className="message-body">
+                            <div className="content">
+                                <p className="is-size-5">{fileResponse}</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
 
             <footer className="footer">
                 <div className="content has-text-centered">
