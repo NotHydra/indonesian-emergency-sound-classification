@@ -1,2 +1,2 @@
-sources/sounds/**/*.wav
-sources/sounds/**/*.mp3
+src/sounds/**/*.wav
+src/sounds/**/*.mp3

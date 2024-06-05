@@ -1,10 +1,10 @@
 from pydub import AudioSegment 
   
-audioFile = "./sources/sounds/ambulance/raw/utomp3.com - - AMBULANCE DRIVER on duty menuju yogyakarta_v144P.mp3"
-outputFolder = "./sources/sounds/ambulance/test"
+audioFile = "./src/sounds/ambulance/raw/utomp3.com - - AMBULANCE DRIVER on duty menuju yogyakarta_v144P.mp3"
+outputFolder = "./src/sounds/ambulance/test"
 
-# audioFile = "./sources/sounds/traffic-noise/raw/SUARA JALAN RAYA MALAM HARI.mp3"
-# outputFolder = "./sources/sounds/traffic-noise/test"
+# audioFile = "./src/sounds/traffic-noise/raw/SUARA JALAN RAYA MALAM HARI.mp3"
+# outputFolder = "./src/sounds/traffic-noise/test"
 
 interval = 5000
 startAt = 374
