@@ -9,7 +9,7 @@ export default function Home(): JSX.Element {
     const [fileResponse, setFileResponse] = useState<String>("No response");
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        if (event.target.files === null || event.target.files[0] === null) {
+        if (event.target.files === null || event.target.files.length === 0) {
             setFile(null);
             setFileName("No file chosen");
 
