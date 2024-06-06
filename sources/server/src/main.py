@@ -28,7 +28,7 @@ async def load_and_extract_spectrogram(
     return mel_spec_db
 
 def debug(text: str) -> None:
-    print(f"\033[36mDEBUG\033[0m:    [{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}]{text}")
+    print(f"\033[36mDEBUG\033[0m:    [{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]{text}")
 
 app: FastAPI = FastAPI()
 
@@ -67,7 +67,7 @@ async def upload_file(file: UploadFile = File(...)) -> bool:
     prediction: np.ndarray = loaded_model.predict(X)
     indices = np.argmax(prediction)
 
-    debug(f"[/api/classify] Result: {indices}, {["Ambulance", "Traffic Noise"][indices]}")
+    debug(f"[/api/classify] Result: {indices}, {['Ambulance', 'Traffic Noise'][indices]}")
     return True if indices == 0 else False
 
 
