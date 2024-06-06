@@ -35,7 +35,7 @@ app.add_middleware(
 
 
 @app.post("/api/classify")
-async def upload_file(file: UploadFile = File(...)) -> None:
+async def upload_file(file: UploadFile = File(...)) -> bool:
     X = []
     max_time_steps: int = 128
     spectrogram: np.ndarray = await load_and_extract_spectrogram(file)
@@ -52,11 +52,11 @@ async def upload_file(file: UploadFile = File(...)) -> None:
     X = np.array(X)
     X = X[..., np.newaxis]
 
-    temp = loaded_model(X)
-    
-    print(temp)
-    
-    return temp.numpy().tolist()
+    loaded_model(X)
+    prediction: np.ndarray = loaded_model.predict(X)
+    indices = np.argmax(prediction)
+
+    return True if indices == 0 else False
 
 
 if __name__ == "__main__":
