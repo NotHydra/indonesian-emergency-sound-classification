@@ -1,4 +1,3 @@
-from io import BufferedReader
 from fastapi import Response
 
 import requests

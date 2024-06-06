@@ -22,6 +22,8 @@ async def load_and_extract_spectrogram(
 
     return mel_spec_db
 
+def debug(text: str) -> None:
+    print(f"\033[36mDEBUG\033[0m:    {text}")
 
 app: FastAPI = FastAPI()
 
@@ -36,6 +38,9 @@ app.add_middleware(
 
 @app.post("/api/classify")
 async def upload_file(file: UploadFile = File(...)) -> bool:
+    debug(f"[/api/classify] Received file: {file.filename}")
+
+    debug(f"[/api/classify] Extract spectrogram")    
     X = []
     max_time_steps: int = 128
     spectrogram: np.ndarray = await load_and_extract_spectrogram(file)
@@ -52,10 +57,12 @@ async def upload_file(file: UploadFile = File(...)) -> bool:
     X = np.array(X)
     X = X[..., np.newaxis]
 
+    debug(f"[/api/classify] Predict")
     loaded_model(X)
     prediction: np.ndarray = loaded_model.predict(X)
     indices = np.argmax(prediction)
 
+    debug(f"[/api/classify] Result: {indices}, {["Ambulance", "Traffic Noise"][indices]}")
     return True if indices == 0 else False
 
 
