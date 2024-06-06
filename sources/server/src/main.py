@@ -1,12 +1,16 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from io import BytesIO
 from types import FunctionType
 
 import datetime
+import keras
 import librosa
 import numpy as np
-import keras
+import os
+
+load_dotenv()
 
 loaded_model: FunctionType = keras.models.load_model("model.h5")
 
@@ -70,4 +74,4 @@ async def upload_file(file: UploadFile = File(...)) -> bool:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=3001)
+    uvicorn.run(app, host=os.getenv("HOST"), port=int(os.getenv("PORT")))
