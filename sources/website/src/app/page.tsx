@@ -43,7 +43,7 @@ export default function Home(): JSX.Element {
         const formData: FormData = new FormData();
         formData.append("file", file);
 
-        const response: AxiosResponse<Boolean> = await axios.post("http://localhost:3001/api/classify", formData, {
+        const response: AxiosResponse<Boolean> = await axios.post("https://emergency-sound-classification-server.up.railway.app/api/classify", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
