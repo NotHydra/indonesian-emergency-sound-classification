@@ -7,7 +7,8 @@ export default function Home(): JSX.Element {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<String>("No file chosen");
-    const [fileResponse, setFileResponse] = useState<String>("No response");
+    const [fileResponseType, setFileResponseType] = useState<Boolean | null>(null);
+    const [fileResponseMessage, setFileResponseMessage] = useState<String | null>(null);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
         if (event.target.files === null || event.target.files.length === 0) {
@@ -26,13 +27,15 @@ export default function Home(): JSX.Element {
         setIsLoading(true);
 
         if (file === null) {
-            setFileResponse("Please choose a file");
+            setFileResponseType(false);
+            setFileResponseMessage("Please choose a file");
 
             return;
         }
 
         if (["audio/wav"].includes(file.type) === false) {
-            setFileResponse("Invalid file type. Please upload a WAV file");
+            setFileResponseType(false);
+            setFileResponseMessage("Invalid file type. Please upload a WAV file");
 
             return;
         }
@@ -46,11 +49,14 @@ export default function Home(): JSX.Element {
             },
         });
 
-        setFileResponse(`File uploaded successfully: ${response.data}`);
+        setFileResponseType(true);
+        setFileResponseMessage(`File uploaded successfully: ${response.data}`);
     };
 
     const handleModalClose = (): void => {
         setIsLoading(false);
+        setFileResponseType(null);
+        setFileResponseMessage(null);
     };
 
     return (
@@ -91,11 +97,11 @@ export default function Home(): JSX.Element {
                 </div>
             </section>
 
-            <div id="upload-modal" className={`modal ${isLoading ? "is-active" : ""}`}>
+            <div id="upload-modal" className={`modal ${fileResponseMessage !== null ? "is-active" : ""}`}>
                 <div className="modal-background"></div>
 
                 <div className="modal-content">
-                    <article className="message is-dark">
+                    <article className={`message ${fileResponseType ? "is-success" : "is-danger"}`}>
                         <div className="message-header">
                             <p className="is-size-4">Response</p>
 
@@ -104,7 +110,7 @@ export default function Home(): JSX.Element {
 
                         <div className="message-body">
                             <div className="content">
-                                <p className="is-size-5">{fileResponse}</p>
+                                <p className="is-size-5">{fileResponseMessage}</p>
                             </div>
                         </div>
                     </article>
