@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from io import BytesIO
 from types import FunctionType
 
+import datetime
 import librosa
 import numpy as np
 import keras
@@ -23,7 +24,7 @@ async def load_and_extract_spectrogram(
     return mel_spec_db
 
 def debug(text: str) -> None:
-    print(f"\033[36mDEBUG\033[0m:    {text}")
+    print(f"\033[36mDEBUG\033[0m:    [{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}]{text}")
 
 app: FastAPI = FastAPI()
 
