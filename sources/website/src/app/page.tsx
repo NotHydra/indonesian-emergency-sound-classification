@@ -23,41 +23,48 @@ export default function Home(): JSX.Element {
     };
 
     const handleFileSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-        event.preventDefault();
-        setIsLoading(true);
+        try {
+            event.preventDefault();
+            setIsLoading(true);
 
-        if (file === null) {
+            if (file === null) {
+                setFileResponseType(false);
+                setFileResponseMessage("Please choose a file");
+
+                return;
+            }
+
+            if (["audio/wav"].includes(file.type) === false) {
+                setFileResponseType(false);
+                setFileResponseMessage("Invalid file type. Please upload a WAV file");
+
+                return;
+            }
+
+            const formData: FormData = new FormData();
+            formData.append("file", file);
+
+            const response: AxiosResponse<Boolean> = await axios.post("https://emergency-sound-classification-server.up.railway.app/api/classify", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.data === false) {
+                setFileResponseType(false);
+                setFileResponseMessage("No emergency sound detected");
+
+                return;
+            }
+
+            setFileResponseType(true);
+            setFileResponseMessage("Emergency sound detected");
+        } catch (error) {
             setFileResponseType(false);
-            setFileResponseMessage("Please choose a file");
+            setFileResponseMessage("An error occurred while processing the file");
 
             return;
         }
-
-        if (["audio/wav"].includes(file.type) === false) {
-            setFileResponseType(false);
-            setFileResponseMessage("Invalid file type. Please upload a WAV file");
-
-            return;
-        }
-
-        const formData: FormData = new FormData();
-        formData.append("file", file);
-
-        const response: AxiosResponse<Boolean> = await axios.post("https://emergency-sound-classification-server.up.railway.app/api/classify", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-
-        if (response.data === false) {
-            setFileResponseType(false);
-            setFileResponseMessage("No emergency sound detected");
-
-            return;
-        }
-
-        setFileResponseType(true);
-        setFileResponseMessage("Emergency sound detected");
     };
 
     const handleModalClose = (): void => {
