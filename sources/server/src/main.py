@@ -1,12 +1,16 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from io import BytesIO
 from types import FunctionType
 
 import datetime
+import keras
 import librosa
 import numpy as np
-import keras
+import os
+
+load_dotenv()
 
 loaded_model: FunctionType = keras.models.load_model("model.h5")
 
@@ -24,7 +28,7 @@ async def load_and_extract_spectrogram(
     return mel_spec_db
 
 def debug(text: str) -> None:
-    print(f"\033[36mDEBUG\033[0m:    [{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}]{text}")
+    print(f"\033[36mDEBUG\033[0m:    [{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]{text}")
 
 app: FastAPI = FastAPI()
 
@@ -63,11 +67,11 @@ async def upload_file(file: UploadFile = File(...)) -> bool:
     prediction: np.ndarray = loaded_model.predict(X)
     indices = np.argmax(prediction)
 
-    debug(f"[/api/classify] Result: {indices}, {["Ambulance", "Traffic Noise"][indices]}")
+    debug(f"[/api/classify] Result: {indices}, {['Ambulance', 'Traffic Noise'][indices]}")
     return True if indices == 0 else False
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=3001)
+    uvicorn.run(app, host=os.getenv("HOST"), port=int(os.getenv("PORT")))
