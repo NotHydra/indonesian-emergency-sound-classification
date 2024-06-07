@@ -6,14 +6,14 @@ import { ChangeEvent, useState } from "react";
 export default function Home(): JSX.Element {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
-    const [fileName, setFileName] = useState<String>("No file chosen");
+    const [fileName, setFileName] = useState<String>("No File Chosen");
     const [fileResponseType, setFileResponseType] = useState<Boolean | null>(null);
     const [fileResponseMessage, setFileResponseMessage] = useState<String | null>(null);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
         if (event.target.files === null || event.target.files.length === 0) {
             setFile(null);
-            setFileName("No file chosen");
+            setFileName("No File Chosen");
 
             return;
         }
@@ -29,14 +29,14 @@ export default function Home(): JSX.Element {
 
             if (file === null) {
                 setFileResponseType(false);
-                setFileResponseMessage("Please choose a file");
+                setFileResponseMessage("Please Choose A File");
 
                 return;
             }
 
             if (["audio/wav"].includes(file.type) === false) {
                 setFileResponseType(false);
-                setFileResponseMessage("Invalid file type. Please upload a WAV file");
+                setFileResponseMessage("Invalid File Type. Please Upload A WAV File");
 
                 return;
             }
@@ -52,16 +52,16 @@ export default function Home(): JSX.Element {
 
             if (response.data === false) {
                 setFileResponseType(false);
-                setFileResponseMessage("No emergency sound detected");
+                setFileResponseMessage("No Ambulance Siren Detected");
 
                 return;
             }
 
             setFileResponseType(true);
-            setFileResponseMessage("Emergency sound detected");
+            setFileResponseMessage("Ambulance Siren Detected");
         } catch (error) {
             setFileResponseType(false);
-            setFileResponseMessage("An error occurred while processing the file");
+            setFileResponseMessage("An Error Occurred While Processing The File");
 
             return;
         }
