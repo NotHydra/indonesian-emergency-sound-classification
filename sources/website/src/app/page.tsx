@@ -8,9 +8,9 @@ export default function Home(): JSX.Element {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
-    const [fileName, setFileName] = useState<String>("No File Chosen");
-    const [fileResponseType, setFileResponseType] = useState<Boolean | null>(null);
-    const [fileResponseMessage, setFileResponseMessage] = useState<String | null>(null);
+    const [fileName, setFileName] = useState<string>("No File Chosen");
+    const [fileResponseType, setFileResponseType] = useState<boolean | null>(null);
+    const [fileResponseMessage, setFileResponseMessage] = useState<string | null>(null);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
         if (event.target.files === null || event.target.files.length === 0) {
@@ -46,7 +46,7 @@ export default function Home(): JSX.Element {
             const formData: FormData = new FormData();
             formData.append("file", file);
 
-            const response: AxiosResponse<Boolean> = await axios.post(classificationURL, formData, {
+            const response: AxiosResponse<boolean> = await axios.post(classificationURL, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
