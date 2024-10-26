@@ -4,6 +4,8 @@ import axios, { AxiosResponse } from "axios";
 import { ChangeEvent, useState } from "react";
 
 export default function Home(): JSX.Element {
+    const classificationURL: string = process.env.NEXT_PUBLIC_CLASSIFICATION_URL || "http://localhost:3001/api/classify";
+
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState<String>("No File Chosen");
@@ -44,7 +46,7 @@ export default function Home(): JSX.Element {
             const formData: FormData = new FormData();
             formData.append("file", file);
 
-            const response: AxiosResponse<Boolean> = await axios.post("https://emergency-sound-classification-server.up.railway.app/api/classify", formData, {
+            const response: AxiosResponse<Boolean> = await axios.post(classificationURL, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
