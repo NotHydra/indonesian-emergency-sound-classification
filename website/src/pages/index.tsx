@@ -1,6 +1,6 @@
 "use client";
 
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import Head from "next/head";
 import { ChangeEvent, useState } from "react";
 
@@ -47,13 +47,13 @@ export default function Home(): JSX.Element {
             const formData: FormData = new FormData();
             formData.append("file", file);
 
-            const response: AxiosResponse<boolean> = await axios.post(classificationURL, formData, {
+            const response = await axios.post<Response<boolean>>(classificationURL, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
 
-            if (response.data === false) {
+            if (response.data.data === false) {
                 setFileResponseType(false);
                 setFileResponseMessage("No Ambulance Siren Detected");
 
