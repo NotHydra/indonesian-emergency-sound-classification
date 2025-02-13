@@ -1,6 +1,7 @@
 "use client";
 
 import axios, { AxiosResponse } from "axios";
+import Head from "next/head";
 import { ChangeEvent, useState } from "react";
 
 export default function Home(): JSX.Element {
@@ -77,6 +78,11 @@ export default function Home(): JSX.Element {
 
     return (
         <>
+            <Head>
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>Indonesian Emergency Sound Classification</title>
+            </Head>
+
             <section className="hero home has-background-main is-fullheight">
                 <div className="hero-body">
                     <div className="">
