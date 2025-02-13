@@ -1,3 +1,5 @@
+import datetime
+import json
 from io import BytesIO
 
 import keras
@@ -59,6 +61,28 @@ async def upload_file(file: UploadFile = File(...)) -> bool:
         Logger.debug(
             f"[/api/classify] Result: {indices}, {['Traffic Noise', 'Ambulance'][indices]}"
         )
+
+        Logger.debug(f"[/api/classify] Add History")
+        try:
+            with open("src/history.json", "r") as json_file:
+                data = json.load(json_file)
+
+                if type(data) is not list:
+                    data = []
+
+        except FileNotFoundError:
+            data = []
+
+        data.append(
+            {
+                "id": 1 if len(data) == 0 else data[-1]["id"] + 1,
+                "result": True if indices == 1 else False,
+                "createdAt": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        )
+
+        with open("src/history.json", "w") as json_file:
+            json.dump(data, json_file, indent=4)
 
         return Response[bool](
             success=True,
