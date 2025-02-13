@@ -5,9 +5,9 @@ import librosa
 import numpy as np
 from fastapi import APIRouter, File, UploadFile
 
-from server.src.common.enums.response import ResponseStatusEnum
-from server.src.utilities.logger import Logger
-from server.src.utilities.response import Response
+from common.enums.response import ResponseStatusEnum
+from utilities.logger import Logger
+from utilities.response import Response
 
 loaded_model = keras.models.load_model("model.h5")
 
