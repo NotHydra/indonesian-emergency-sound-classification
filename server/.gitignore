@@ -1,6 +1,7 @@
 venv
 
 **/*.wav
+**/*.h5
 
 **/*.json
 **/__pycache__
