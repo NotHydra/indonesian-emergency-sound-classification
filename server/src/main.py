@@ -13,9 +13,9 @@ app: FastAPI = FastAPI(root_path="/api")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[f"http://localhost:{int(os.getenv("PORT"))}","https://ambulance.irswanda.com"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["POST"],
     allow_headers=["*"],
 )
 
