@@ -1,4 +1,6 @@
 venv
 
 **/*.wav
-.env
+
+**/*.json
+**/__pycache__
