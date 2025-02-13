@@ -1,2 +1,4 @@
 src/sounds/**/*.wav
 src/sounds/**/*.mp3
+
+venv
