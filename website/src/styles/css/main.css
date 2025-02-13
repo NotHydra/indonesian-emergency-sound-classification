@@ -1,18 +1,21 @@
 :root {
-    --main: #224178;
+  --main: #224178;
 }
 
 .home {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("./../../../public/images/home-background.png");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("./../../../public/images/home-background.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .has-background-main {
-    background-color: var(--main);
+  background-color: var(--main);
 }
 
 .footer-link {
-    color: #ffffff;
-} /*# sourceMappingURL=main.css.map */
+  color: #ffffff;
+}
+.footer-link:hover {
+  color: #abb1aa;
+}/*# sourceMappingURL=main.css.map */

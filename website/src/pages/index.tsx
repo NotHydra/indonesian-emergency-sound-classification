@@ -148,7 +148,17 @@ export default function Home(): JSX.Element {
                     </div>
 
                     <p>
-                        <strong>Copyright © 2024</strong> Indonesian Emergency Sound Classification - Kalimantan's Institute of Technology
+                        <strong>
+                            Copyright &copy; {new Date().getFullYear()} -{" "}
+                            <a className="footer-link" href="https://itk.ac.id" target="_blank">
+                                ITK
+                            </a>{" "}
+                            -{" "}
+                            <a className="footer-link" href="https://if.itk.ac.id" target="_blank">
+                                IF
+                            </a>{" "}
+                            - Indonesian Emergency Sound Classification - All Rights Reserved
+                        </strong>
                     </p>
                 </div>
             </footer>
