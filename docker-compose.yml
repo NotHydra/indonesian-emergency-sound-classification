@@ -1,0 +1,105 @@
+services:
+    website-development:
+        container_name: indonesian-emergency-sound-classification-website-development
+
+        profiles:
+            - development
+
+        build:
+            context: ./website
+            target: development
+
+        env_file:
+            - .env
+
+        environment:
+            - PORT=${WEBSITE_PORT}
+            - NEXT_PUBLIC_CLASSIFICATION_URL=${NEXT_PUBLIC_WEBSITE_CLASSIFICATION_URL}
+
+        volumes:
+            - ./website/src:/app/src
+            - ./website/public:/app/public
+
+        restart: always
+
+        ports:
+            - ${WEBSITE_PORT}:${WEBSITE_PORT}
+
+    website-production:
+        container_name: indonesian-emergency-sound-classification-website-production
+
+        profiles:
+            - production
+
+        build:
+            context: ./website
+            target: production
+            args:
+                - NEXT_PUBLIC_CLASSIFICATION_URL=${NEXT_PUBLIC_WEBSITE_CLASSIFICATION_URL}
+
+        env_file:
+            - .env
+
+        environment:
+            - PORT=${WEBSITE_PORT}
+            - NEXT_PUBLIC_CLASSIFICATION_URL=${NEXT_PUBLIC_WEBSITE_CLASSIFICATION_URL}
+
+        restart: always
+
+        ports:
+            - ${WEBSITE_PORT}:${WEBSITE_PORT}
+
+        networks:
+            - app_network
+
+    server-development:
+        container_name: indonesian-emergency-sound-classification-server-development
+
+        profiles:
+            - development
+
+        build:
+            context: ./server
+            target: development
+
+        env_file:
+            - .env
+
+        environment:
+            - PORT=${SERVER_PORT}
+
+        volumes:
+            - ./server/src:/app/src
+
+        restart: always
+
+        ports:
+            - ${SERVER_PORT}:${SERVER_PORT}
+
+    server-production:
+        container_name: indonesian-emergency-sound-classification-server-production
+
+        profiles:
+            - production
+
+        build:
+            context: ./server
+            target: production
+
+        env_file:
+            - .env
+
+        environment:
+            - PORT=${SERVER_PORT}
+
+        restart: always
+
+        ports:
+            - ${SERVER_PORT}:${SERVER_PORT}
+
+        networks:
+            - app_network
+
+networks:
+    app_network:
+        driver: bridge

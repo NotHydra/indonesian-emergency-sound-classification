@@ -4,10 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "sources/website"
+			"path": "website"
 		},
 		{
-			"path": "sources/server"
+			"path": "server"
 		}
 	],
 	"settings": {}
