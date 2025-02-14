@@ -13,7 +13,10 @@ app: FastAPI = FastAPI(root_path="/api")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://ambulance.irswanda.com"],
+    allow_origins=[
+        "https://ambulance.irswanda.com",
+        "https://www.ambulance.irswanda.com",
+    ],
     allow_credentials=True,
     allow_methods=["POST"],
     allow_headers=["*"],
