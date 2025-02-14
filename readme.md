@@ -1,3 +1,5 @@
+## Disclaimer: The CNN Model Is Not Included In The Public Repository
+
 ## Tech Stack
 
 ![Keras](https://img.shields.io/badge/Keras-%23D00000.svg?style=for-the-badge&logo=Keras&logoColor=white)
