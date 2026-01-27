@@ -59,7 +59,7 @@ async def upload_file(file: UploadFile = File(...)) -> bool:
         indices: np.intp = np.argmax(prediction)
 
         Logger.debug(
-            f"[/api/classify] Result: {indices}, {['Traffic Noise', 'Ambulance'][indices]}"
+            f"[/api/classify] Result: {indices}, {['Ambulance', 'Traffic Noise'][indices]}"
         )
 
         Logger.debug(f"[/api/classify] Add History")
@@ -76,7 +76,7 @@ async def upload_file(file: UploadFile = File(...)) -> bool:
         data.append(
             {
                 "id": 1 if len(data) == 0 else data[-1]["id"] + 1,
-                "result": True if indices == 1 else False,
+                "result": True if indices == 0 else False,
                 "createdAt": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             }
         )
@@ -88,7 +88,7 @@ async def upload_file(file: UploadFile = File(...)) -> bool:
             success=True,
             status=ResponseStatusEnum.CREATED_201,
             message="Success",
-            data=True if indices == 1 else False,
+            data=True if indices == 0 else False,
         )
 
     except Exception as e:
