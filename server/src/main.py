@@ -15,8 +15,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://ambulance.irswanda.com",
-        "https://www.ambulance.irswanda.com",
+        "https://ambulance.demo.irswanda.com",
+        "https://www.ambulance.demo.irswanda.com",
     ],
     allow_credentials=True,
     allow_methods=["POST"],
