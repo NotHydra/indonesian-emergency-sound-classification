@@ -1,6 +1,12 @@
 interface Response<DataType = null> {
     success: boolean;
-    statusCode: number;
+    status: number;
     message: string;
     data: DataType;
+}
+
+interface ClassificationResult {
+    isAmbulance: boolean;
+    confidence: number;
+    confidencePercent: string;
 }
