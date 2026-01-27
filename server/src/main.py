@@ -14,6 +14,7 @@ app: FastAPI = FastAPI(root_path="/api")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost:3000",
         "https://ambulance.irswanda.com",
         "https://www.ambulance.irswanda.com",
     ],
