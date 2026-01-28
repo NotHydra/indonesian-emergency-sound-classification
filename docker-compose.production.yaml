@@ -1,0 +1,49 @@
+services:
+    website-production:
+        container_name: indonesian-emergency-sound-classification-website-production
+
+        build:
+            context: ./website
+            target: production
+            args:
+                - NEXT_PUBLIC_CLASSIFICATION_URL=${NEXT_PUBLIC_WEBSITE_CLASSIFICATION_URL}
+
+        env_file:
+            - .env
+
+        environment:
+            - PORT=${WEBSITE_PORT}
+            - NEXT_PUBLIC_CLASSIFICATION_URL=${NEXT_PUBLIC_WEBSITE_CLASSIFICATION_URL}
+
+        restart: always
+
+        ports:
+            - ${WEBSITE_PORT}:${WEBSITE_PORT}
+
+        networks:
+            - app_network
+
+    server-production:
+        container_name: indonesian-emergency-sound-classification-server-production
+
+        build:
+            context: ./server
+            target: production
+
+        env_file:
+            - .env
+
+        environment:
+            - PORT=${SERVER_PORT}
+
+        restart: always
+
+        ports:
+            - ${SERVER_PORT}:${SERVER_PORT}
+
+        networks:
+            - app_network
+
+networks:
+    app_network:
+        driver: bridge
