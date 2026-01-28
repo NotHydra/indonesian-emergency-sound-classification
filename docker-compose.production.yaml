@@ -17,8 +17,8 @@ services:
 
         restart: always
 
-        expose:
-            - ${WEBSITE_PORT}
+        ports:
+            - "${WEBSITE_PORT}:${WEBSITE_PORT}"
 
         networks:
             - app-network
@@ -40,8 +40,8 @@ services:
 
         restart: always
 
-        expose:
-            - ${SERVER_PORT}
+        ports:
+            - "${SERVER_PORT}:${SERVER_PORT}"
 
         networks:
             - app-network
