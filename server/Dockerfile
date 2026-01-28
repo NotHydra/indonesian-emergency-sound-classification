@@ -6,6 +6,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1 \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
@@ -13,7 +14,14 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
 COPY src ./src
-COPY model.h5 .
+
+# Download model from external source
+ARG MODEL_URL
+RUN if [ -n "$MODEL_URL" ]; then \
+        wget -O model.h5 "$MODEL_URL"; \
+    else \
+        echo "MODEL_URL not provided, skipping model download"; \
+    fi
 
 
 

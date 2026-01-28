@@ -29,6 +29,8 @@ services:
         build:
             context: ./server
             target: production
+            args:
+                - MODEL_URL=${MODEL_URL}
 
         env_file:
             - .env
