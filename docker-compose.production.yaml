@@ -6,7 +6,7 @@ services:
             context: ./website
             target: production
             args:
-                - NEXT_PUBLIC_CLASSIFICATION_URL=${NEXT_PUBLIC_WEBSITE_CLASSIFICATION_URL}
+                NEXT_PUBLIC_CLASSIFICATION_URL: ${NEXT_PUBLIC_WEBSITE_CLASSIFICATION_URL}
 
         env_file:
             - .env
@@ -17,11 +17,11 @@ services:
 
         restart: always
 
-        ports:
-            - ${WEBSITE_PORT}:${WEBSITE_PORT}
+        expose:
+            - ${WEBSITE_PORT}
 
         networks:
-            - app_network
+            - app-network
 
     server-production:
         container_name: indonesian-emergency-sound-classification-server-production
@@ -40,12 +40,13 @@ services:
 
         restart: always
 
-        ports:
-            - ${SERVER_PORT}:${SERVER_PORT}
+        expose:
+            - ${SERVER_PORT}
 
         networks:
-            - app_network
+            - app-network
 
 networks:
-    app_network:
+    app-network:
+        name: app-network
         driver: bridge
