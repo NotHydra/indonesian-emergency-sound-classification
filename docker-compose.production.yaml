@@ -21,7 +21,7 @@ services:
             - default
         
         labels:
-        - "traefik.http.services.website-production.loadbalancer.server.port=${WEBSITE_PORT}"
+        - "traefik.http.services.website-production.loadbalancer.server.port=3000"
   
 
     server-production:
@@ -45,7 +45,7 @@ services:
             - default
 
         labels:
-            - "traefik.http.services.server-production.loadbalancer.server.port=${SERVER_PORT}"
+            - "traefik.http.services.server-production.loadbalancer.server.port=3001"
 
 networks:
     default:
