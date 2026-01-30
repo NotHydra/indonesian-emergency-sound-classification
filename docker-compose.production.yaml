@@ -17,9 +17,6 @@ services:
 
         restart: always
 
-        ports:
-            - "${WEBSITE_PORT}:${WEBSITE_PORT}"
-
         networks:
             - default
         
@@ -43,9 +40,6 @@ services:
             - PORT=${SERVER_PORT}
 
         restart: always
-
-        ports:
-            - "${SERVER_PORT}:${SERVER_PORT}"
 
         networks:
             - default
