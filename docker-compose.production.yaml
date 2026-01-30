@@ -22,6 +22,10 @@ services:
 
         networks:
             - default
+        
+        labels:
+        - "traefik.http.services.website-production.loadbalancer.server.port=${WEBSITE_PORT}"
+  
 
     server-production:
         container_name: indonesian-emergency-sound-classification-server-production
@@ -45,6 +49,9 @@ services:
 
         networks:
             - default
+
+        labels:
+            - "traefik.http.services.server-production.loadbalancer.server.port=${SERVER_PORT}"
 
 networks:
     default:
