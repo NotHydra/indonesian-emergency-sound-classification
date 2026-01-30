@@ -21,7 +21,7 @@ services:
             - "${WEBSITE_PORT}:${WEBSITE_PORT}"
 
         networks:
-            - app-network
+            - default
 
     server-production:
         container_name: indonesian-emergency-sound-classification-server-production
@@ -44,10 +44,8 @@ services:
             - "${SERVER_PORT}:${SERVER_PORT}"
 
         networks:
-            - app-network
+            - default
 
 networks:
-    app-network:
-        name: app-network
+    default:
         driver: bridge
-        external: true
