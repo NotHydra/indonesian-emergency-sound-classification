@@ -25,6 +25,13 @@ services:
         ports:
             - ${WEBSITE_PORT}:${WEBSITE_PORT}
 
+        healthcheck:
+            test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:${WEBSITE_PORT} || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+
     website-production:
         container_name: indonesian-emergency-sound-classification-website-production
 
@@ -48,6 +55,13 @@ services:
 
         ports:
             - ${WEBSITE_PORT}:${WEBSITE_PORT}
+
+        healthcheck:
+            test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:${WEBSITE_PORT} || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
 
         networks:
             - app_network
@@ -76,6 +90,13 @@ services:
         ports:
             - ${SERVER_PORT}:${SERVER_PORT}
 
+        healthcheck:
+            test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:${SERVER_PORT} || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+
     server-production:
         container_name: indonesian-emergency-sound-classification-server-production
 
@@ -96,6 +117,13 @@ services:
 
         ports:
             - ${SERVER_PORT}:${SERVER_PORT}
+
+        healthcheck:
+            test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:${SERVER_PORT} || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
 
         networks:
             - app_network
