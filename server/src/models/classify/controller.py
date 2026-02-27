@@ -1,16 +1,16 @@
-import datetime
-import json
 import os
 import tempfile
+import time
 from io import BytesIO
 
 import librosa
 import numpy as np
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, Request
 from pydub import AudioSegment
 
 from common.enums.response import ResponseStatusEnum
 from model_manager import model_manager
+from utilities.history import HistoryLogger
 from utilities.logger import Logger
 from utilities.response import Response
 
@@ -99,43 +99,108 @@ router: APIRouter = APIRouter(prefix="/classify", tags=["Classify"])
 
 
 @router.post("/")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(request: Request, file: UploadFile = File(...)):
+    """
+    Classify an audio file to detect ambulance sirens.
+
+    Args:
+        request: FastAPI Request object (for client IP and headers)
+        file: Audio file to classify (WAV, MP3, WebM, OGG, M4A)
+
+    Returns:
+        Classification result with confidence score
+    """
+    
+    start_time = time.time()
+    
+    # Extract client information
+    client_ip = request.client.host if request.client else "unknown"
+    user_agent = request.headers.get("user-agent", "unknown")
+    
     try:
         Logger.debug(f"[/api/classify] Received file: {file.filename}")
 
         # Get file extension
         file_extension = get_file_extension(file.filename)
         
-        # Validate file extension
-        if file_extension not in ALLOWED_EXTENSIONS:
-            Logger.debug(f"[/api/classify] Invalid file extension: {file_extension}")
-            return Response[None](
-                success=False,
-                status=ResponseStatusEnum.BAD_REQUEST_400,
-                message=f"Invalid file type. Supported formats: WAV, MP3, WebM, OGG, M4A",
-                data=None,
-            )
-
         # Read file content
         file_content = await file.read()
         file_size = len(file_content)
+        
+        # Validate file extension
+        if file_extension not in ALLOWED_EXTENSIONS:
+            Logger.debug(f"[/api/classify] Invalid file extension: {file_extension}")
+            
+            error_msg = f"Invalid file type. Supported formats: WAV, MP3, WebM, OGG, M4A"
+            
+            processing_time = (time.time() - start_time) * 1000
+            
+            HistoryLogger.log_attempt(
+                file_name=file.filename or "unknown",
+                file_size=file_size,
+                audio_format=file_extension,
+                client_ip=client_ip,
+                user_agent=user_agent,
+                success=False,
+                error_message=error_msg,
+                processing_time_ms=processing_time,
+            )
+            
+            return Response[None](
+                success=False,
+                status=ResponseStatusEnum.BAD_REQUEST_400,
+                message=error_msg,
+                data=None,
+            )
 
         # Validate file size
         if file_size > MAX_FILE_SIZE_BYTES:
             Logger.debug(f"[/api/classify] File too large: {file_size} bytes")
+            
+            error_msg = f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB"
+            
+            processing_time = (time.time() - start_time) * 1000
+            
+            HistoryLogger.log_attempt(
+                file_name=file.filename or "unknown",
+                file_size=file_size,
+                audio_format=file_extension,
+                client_ip=client_ip,
+                user_agent=user_agent,
+                success=False,
+                error_message=error_msg,
+                processing_time_ms=processing_time,
+            )
+            
             return Response[None](
                 success=False,
                 status=ResponseStatusEnum.BAD_REQUEST_400,
-                message=f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB",
+                message=error_msg,
                 data=None,
             )
 
         if file_size == 0:
             Logger.debug("[/api/classify] Empty file received")
+            
+            error_msg = "Empty file received"
+            
+            processing_time = (time.time() - start_time) * 1000
+            
+            HistoryLogger.log_attempt(
+                file_name=file.filename or "unknown",
+                file_size=file_size,
+                audio_format=file_extension,
+                client_ip=client_ip,
+                user_agent=user_agent,
+                success=False,
+                error_message=error_msg,
+                processing_time_ms=processing_time,
+            )
+            
             return Response[None](
                 success=False,
                 status=ResponseStatusEnum.BAD_REQUEST_400,
-                message="Empty file received",
+                message=error_msg,
                 data=None,
             )
 
@@ -148,10 +213,27 @@ async def upload_file(file: UploadFile = File(...)):
                 audio_data = await convert_to_wav(file_content, file_extension)
 
             except ValueError as e:
+                error_msg = str(e)
+                
+                Logger.error(f"[/api/classify] Conversion error: {error_msg}")
+                
+                processing_time = (time.time() - start_time) * 1000
+                
+                HistoryLogger.log_attempt(
+                    file_name=file.filename or "unknown",
+                    file_size=file_size,
+                    audio_format=file_extension,
+                    client_ip=client_ip,
+                    user_agent=user_agent,
+                    success=False,
+                    error_message=error_msg,
+                    processing_time_ms=processing_time,
+                )
+                
                 return Response[None](
                     success=False,
                     status=ResponseStatusEnum.BAD_REQUEST_400,
-                    message=str(e),
+                    message=error_msg,
                     data=None,
                 )
 
@@ -185,12 +267,27 @@ async def upload_file(file: UploadFile = File(...)):
             prediction: np.ndarray = model.predict(X)
             
         except Exception as e:
+            error_msg = "Model prediction failed. Please try again later."
+            
             Logger.error(f"[/api/classify] Model prediction failed: {e}")
-        
+            
+            processing_time = (time.time() - start_time) * 1000
+            
+            HistoryLogger.log_attempt(
+                file_name=file.filename or "unknown",
+                file_size=file_size,
+                audio_format=file_extension,
+                client_ip=client_ip,
+                user_agent=user_agent,
+                success=False,
+                error_message=error_msg,
+                processing_time_ms=processing_time,
+            )
+            
             return Response[None](
                 success=False,
                 status=ResponseStatusEnum.INTERNAL_SERVER_ERROR_500,
-                message="Model prediction failed. Please try again later.",
+                message=error_msg,
                 data=None,
             )
         
@@ -205,29 +302,22 @@ async def upload_file(file: UploadFile = File(...)):
             f"[/api/classify] Result: {indices}, {['Ambulance', 'Traffic Noise'][indices]}, Confidence: {confidence_percent}"
         )
 
-        # Add to history
-        Logger.debug("[/api/classify] Adding to history")
-        try:
-            with open("src/history.json", "r") as json_file:
-                data = json.load(json_file)
-
-                if type(data) is not list:
-                    data = []
-
-        except FileNotFoundError:
-            data = []
-
-        data.append(
-            {
-                "id": 1 if len(data) == 0 else data[-1]["id"] + 1,
-                "result": is_ambulance,
-                "confidence": confidence,
-                "createdAt": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            }
+        # Log successful classification
+        processing_time = (time.time() - start_time) * 1000
+        
+        Logger.debug("[/api/classify] Logging successful classification")
+        
+        HistoryLogger.log_attempt(
+            file_name=file.filename or "unknown",
+            file_size=file_size,
+            audio_format=file_extension,
+            client_ip=client_ip,
+            user_agent=user_agent,
+            success=True,
+            classification_result=is_ambulance,
+            confidence=confidence,
+            processing_time_ms=processing_time,
         )
-
-        with open("src/history.json", "w") as json_file:
-            json.dump(data, json_file, indent=4)
 
         # Return response with confidence scores
         return Response[dict](
@@ -243,6 +333,24 @@ async def upload_file(file: UploadFile = File(...)):
 
     except Exception as e:
         Logger.error(f"[/api/classify] Error: {e}")
+        
+        # Try to log the error attempt with whatever information we have
+        try:
+            processing_time = (time.time() - start_time) * 1000
+            
+            HistoryLogger.log_attempt(
+                file_name=file.filename or "unknown",
+                file_size=file.size if hasattr(file, 'size') else 0,
+                audio_format=get_file_extension(file.filename) if file.filename else "unknown",
+                client_ip=client_ip,
+                user_agent=user_agent,
+                success=False,
+                error_message=str(e),
+                processing_time_ms=processing_time,
+            )
+        
+        except Exception as log_error:
+            Logger.error(f"[/api/classify] Failed to log error: {log_error}")
 
         return Response[None](
             success=False,
