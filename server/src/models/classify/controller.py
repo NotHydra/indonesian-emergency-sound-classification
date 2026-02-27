@@ -10,7 +10,6 @@ from fastapi import APIRouter, File, UploadFile
 from pydub import AudioSegment
 
 from common.enums.response import ResponseStatusEnum
-from config import limiter
 from model_manager import model_manager
 from utilities.logger import Logger
 from utilities.response import Response
@@ -99,7 +98,6 @@ def get_file_extension(filename: str) -> str:
 router: APIRouter = APIRouter(prefix="/classify", tags=["Classify"])
 
 
-@limiter.limit("30/minute")
 @router.post("/")
 async def upload_file(file: UploadFile = File(...)):
     try:
