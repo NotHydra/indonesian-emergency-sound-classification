@@ -7,10 +7,11 @@ from io import BytesIO
 import keras
 import librosa
 import numpy as np
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, Request
 from pydub import AudioSegment
 
 from common.enums.response import ResponseStatusEnum
+from config import limiter
 from utilities.logger import Logger
 from utilities.response import Response
 
@@ -64,12 +65,14 @@ async def convert_to_wav(file_content: bytes, original_format: str) -> BytesIO:
             wav_buffer.seek(0)
             
             return wav_buffer
+            
         finally:
             # Clean up temporary file
             os.unlink(temp_input_path)
             
     except Exception as e:
         Logger.error(f"[convert_to_wav] Error converting audio: {e}")
+
         raise ValueError(f"Failed to convert audio file: {str(e)}")
 
 
@@ -91,14 +94,16 @@ def get_file_extension(filename: str) -> str:
     """Get the file extension from filename."""
     if not filename:
         return ""
+
     return os.path.splitext(filename)[1].lower()
 
 
 router: APIRouter = APIRouter(prefix="/classify", tags=["Classify"])
 
 
+@limiter.limit("30/minute")
 @router.post("/")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(request: Request, file: UploadFile = File(...)):
     try:
         Logger.debug(f"[/api/classify] Received file: {file.filename}")
 
@@ -145,6 +150,7 @@ async def upload_file(file: UploadFile = File(...)):
             Logger.debug(f"[/api/classify] Converting {file_extension} to WAV")
             try:
                 audio_data = await convert_to_wav(file_content, file_extension)
+
             except ValueError as e:
                 return Response[None](
                     success=False,
@@ -152,6 +158,7 @@ async def upload_file(file: UploadFile = File(...)):
                     message=str(e),
                     data=None,
                 )
+
         else:
             audio_data = BytesIO(file_content)
 
@@ -167,6 +174,7 @@ async def upload_file(file: UploadFile = File(...)):
                 spectrogram, ((0, 0), (0, pad_width)), mode="constant"
             )
             X.append(spectrogram_padded)
+
         else:
             X.append(spectrogram[:, :max_time_steps])
 
