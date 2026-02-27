@@ -4,18 +4,16 @@ import os
 import tempfile
 from io import BytesIO
 
-import keras
 import librosa
 import numpy as np
-from fastapi import APIRouter, File, UploadFile, Request
+from fastapi import APIRouter, File, UploadFile
 from pydub import AudioSegment
 
 from common.enums.response import ResponseStatusEnum
 from config import limiter
+from model_manager import model_manager
 from utilities.logger import Logger
 from utilities.response import Response
-
-loaded_model = keras.models.load_model("model.h5")
 
 # Configuration
 MAX_FILE_SIZE_MB = 10
@@ -103,7 +101,7 @@ router: APIRouter = APIRouter(prefix="/classify", tags=["Classify"])
 
 @limiter.limit("30/minute")
 @router.post("/")
-async def upload_file(request: Request, file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...)):
     try:
         Logger.debug(f"[/api/classify] Received file: {file.filename}")
 
@@ -173,6 +171,7 @@ async def upload_file(request: Request, file: UploadFile = File(...)):
             spectrogram_padded: np.ndarray = np.pad(
                 spectrogram, ((0, 0), (0, pad_width)), mode="constant"
             )
+            
             X.append(spectrogram_padded)
 
         else:
@@ -183,8 +182,20 @@ async def upload_file(request: Request, file: UploadFile = File(...)):
 
         # Predict
         Logger.debug("[/api/classify] Running prediction")
-        loaded_model(X)
-        prediction: np.ndarray = loaded_model.predict(X)
+        try:
+            model = model_manager.get_model()
+            prediction: np.ndarray = model.predict(X)
+            
+        except Exception as e:
+            Logger.error(f"[/api/classify] Model prediction failed: {e}")
+        
+            return Response[None](
+                success=False,
+                status=ResponseStatusEnum.INTERNAL_SERVER_ERROR_500,
+                message="Model prediction failed. Please try again later.",
+                data=None,
+            )
+        
         indices: np.intp = np.argmax(prediction)
         
         # Get confidence score (probability for the predicted class)
