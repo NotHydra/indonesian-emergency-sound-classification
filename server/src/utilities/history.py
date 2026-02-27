@@ -17,19 +17,33 @@ class HistoryLogger:
         try:
             with open(HistoryLogger.HISTORY_FILE, "r") as f:
                 data = json.load(f)
-            
                 return data if isinstance(data, list) else []
             
         except FileNotFoundError:
+            return []
+        
+        except json.JSONDecodeError:
+            # File exists but contains invalid JSON
+        
+            return []
+        
+        except Exception as e:
+            # Log any other errors and return empty list
+        
+            print(f"Error reading history file: {e}")
+        
             return []
 
     @staticmethod
     def save_history(data: list) -> None:
         """Save history to file."""
-        
-        os.makedirs(os.path.dirname(HistoryLogger.HISTORY_FILE), exist_ok=True)
-        with open(HistoryLogger.HISTORY_FILE, "w") as f:
-            json.dump(data, f, indent=4)
+        try:
+            os.makedirs(os.path.dirname(HistoryLogger.HISTORY_FILE), exist_ok=True)
+            with open(HistoryLogger.HISTORY_FILE, "w") as f:
+                json.dump(data, f, indent=4)
+                
+        except Exception as e:
+            print(f"Error saving history file: {e}")
 
     @staticmethod
     def log_attempt(
@@ -75,7 +89,11 @@ class HistoryLogger:
             "success": success,
             "file": {
                 "name": file_name,
-                "size_bytes": file_size,
+                "size": {
+                    "bytes": file_size,
+                    "kilobytes": round(file_size / 1024, 2),
+                    "megabytes": round(file_size / (1024 * 1024), 2)
+                },
                 "format": audio_format,
             },
             "requester": {
