@@ -107,8 +107,10 @@ class HistoryLogger:
             entry["classification"] = {
                 "result": "ambulance" if classification_result else "traffic_noise",
                 "is_ambulance": classification_result,
-                "confidence": confidence,
-                "confidence_percent": round(confidence * 100, 2),
+                "confidence": {
+                    "value": confidence,
+                    "percent": round(confidence * 100, 2),
+                },
             }
 
         # Add error information if failed
@@ -119,7 +121,10 @@ class HistoryLogger:
 
         # Add processing time if available
         if processing_time_ms is not None:
-            entry["processing_time_ms"] = processing_time_ms
+            entry["processing_time"] = {
+                "milliseconds": processing_time_ms,
+                "seconds": processing_time_ms / 1000,
+            }
 
         # Save to history
         history.append(entry)
